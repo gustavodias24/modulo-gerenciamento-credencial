@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 
@@ -14,6 +15,7 @@ import com.benicio.admkey.adapter.AdapterCredencial;
 import com.benicio.admkey.adapter.AdapterEmpresa;
 import com.benicio.admkey.databinding.ActivityExibirCredenciaisBinding;
 import com.benicio.admkey.databinding.ActivityMainBinding;
+import com.benicio.admkey.databinding.CriarCredencialLayoutBinding;
 import com.benicio.admkey.model.CredencialModel;
 import com.benicio.admkey.service.Service;
 import com.benicio.admkey.util.RetrofitUtil;
@@ -29,7 +31,7 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
     private Retrofit retrofit;
     private AdapterCredencial adapter;
     private Service service;
-    private Dialog dialogCarregando;
+    private Dialog dialogCarregando, dialogCriarCredenciais;
     private ActivityExibirCredenciaisBinding binding;
 
     @Override
@@ -43,6 +45,11 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
         service = RetrofitUtil.criarService(retrofit);
         dialogCarregando = RetrofitUtil.criarDialogCarregando(ExibirCredenciaisActivity.this);
         configurarRecycler();
+        criarDialogAdicionarCredenciamento();
+
+        binding.adicionarCredencialBtn.setOnClickListener( viewCriar -> {
+            dialogCriarCredenciais.show();
+        });
 
     }
 
@@ -55,5 +62,13 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
         adapter = new AdapterCredencial(lista, getApplicationContext());
         r.setAdapter(adapter);
 
+    }
+
+    public void criarDialogAdicionarCredenciamento(){
+        AlertDialog.Builder b = new AlertDialog.Builder(ExibirCredenciaisActivity.this);
+        CriarCredencialLayoutBinding criarCredencialBinding = CriarCredencialLayoutBinding.inflate(getLayoutInflater());
+
+        b.setView(criarCredencialBinding.getRoot());
+        dialogCriarCredenciais = b.create();
     }
 }
