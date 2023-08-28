@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.benicio.admkey.adapter.AdapterEmpresa;
@@ -29,6 +30,10 @@ public class MainActivity extends AppCompatActivity {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         configurarRecycler();
+
+        binding.empresaAddFab.setOnClickListener( viewAdd -> {
+            startActivity(new Intent(getApplicationContext(), AdicionarEmpresaActivity.class));
+        });
     }
 
     public void configurarRecycler(){
