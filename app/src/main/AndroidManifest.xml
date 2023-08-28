@@ -15,9 +15,12 @@
         android:theme="@style/Theme.AdmKey"
         tools:targetApi="31">
         <activity
-            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar.Bridge"
-            android:name=".activity.AdicionarEmpresaActivity"
+            android:name=".activity.ExibirCredenciaisActivity"
             android:exported="false" />
+        <activity
+            android:name=".activity.AdicionarEmpresaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar.Bridge" />
         <activity
             android:name=".activity.MainActivity"
             android:exported="true">
