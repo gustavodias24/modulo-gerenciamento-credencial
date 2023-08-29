@@ -16,6 +16,7 @@
             android:id="@+id/empresa_image"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:layout_marginLeft="8dp"
             android:layout_weight="1"
             android:src="@raw/carregando" />
 

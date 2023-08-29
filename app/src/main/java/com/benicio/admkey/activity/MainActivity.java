@@ -1,5 +1,6 @@
 package com.benicio.admkey.activity;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -9,11 +10,15 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.AdapterView;
 
 import com.benicio.admkey.adapter.AdapterEmpresa;
 import com.benicio.admkey.databinding.ActivityMainBinding;
 import com.benicio.admkey.model.EmpresaModel;
 import com.benicio.admkey.service.Service;
+import com.benicio.admkey.util.RecyclerItemClickListener;
 import com.benicio.admkey.util.RetrofitUtil;
 
 import java.util.ArrayList;
@@ -29,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerView r;
     private Retrofit retrofit;
     private Service service;
-    private Dialog dialogCarregando;
     private List<EmpresaModel> lista = new ArrayList<>();
     private AdapterEmpresa adapter;
 
@@ -40,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
-        dialogCarregando = RetrofitUtil.criarDialogCarregando(this);
 
         retrofit = RetrofitUtil.criarRetrofit();
         service = RetrofitUtil.criarService(retrofit);
@@ -50,6 +53,29 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(), AdicionarEmpresaActivity.class));
         });
 
+        r.addOnItemTouchListener(new RecyclerItemClickListener(
+                getApplicationContext(),
+                r,
+                new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        EmpresaModel empresaClicada = lista.get(position);
+                        Intent i = new Intent(getApplicationContext(), ExibirCredenciaisActivity.class);
+                        i.putExtra("id_empresa", empresaClicada.get_id());
+                        startActivity(i);
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+
+                    }
+
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                    }
+                }
+        ));
     }
 
     @Override
@@ -72,11 +98,11 @@ public class MainActivity extends AppCompatActivity {
 
     public void listarEmpresas(){
         lista.clear();
-//        dialogCarregando.show();
+        binding.carregamento.setVisibility(View.VISIBLE);
         service.listarEmpresa().enqueue(new Callback<List<EmpresaModel>>() {
             @Override
             public void onResponse(Call<List<EmpresaModel>> call, Response<List<EmpresaModel>> response) {
-//                dialogCarregando.dismiss();
+                binding.carregamento.setVisibility(View.GONE);
                 if ( response.isSuccessful()){
                     lista.addAll(response.body());
                     adapter.notifyDataSetChanged();
@@ -85,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<EmpresaModel>> call, Throwable t) {
-//                dialogCarregando.dismiss();
+                binding.carregamento.setVisibility(View.GONE);
             }
         });
     }

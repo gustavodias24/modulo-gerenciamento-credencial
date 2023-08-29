@@ -1,5 +1,6 @@
 package com.benicio.admkey.service;
 
+import com.benicio.admkey.model.CredencialModel;
 import com.benicio.admkey.model.EmpresaModel;
 import com.benicio.admkey.util.MsgModel;
 
@@ -20,4 +21,10 @@ public interface Service {
 
     @POST("{id}/pegar_logo")
     Call<MsgModel> pegarLogoEmpresa (@Path("id") String id);
+
+    @POST("{qtd}/criar_credencial")
+    Call<MsgModel> criarCredencial (@Path("qtd") String qtd, @Body EmpresaModel empresaModel);
+
+    @POST("{id_empresa}/listar_credencial")
+    Call<List<CredencialModel>> listarCredencial (@Path("id_empresa") String id_empresa);
 }

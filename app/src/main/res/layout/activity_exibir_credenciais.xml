@@ -20,10 +20,13 @@
             android:id="@+id/adicionar_credencial_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="center|center_horizontal"
+            android:backgroundTint="#673AB7"
             android:drawableLeft="@drawable/baseline_add_24"
-            android:gravity="center_horizontal"
-            android:text="Adicionar mais credenciais" />
+            android:gravity="center|center_horizontal"
+            android:text="Adicionar mais credenciais"
+            android:textAlignment="viewStart"
+            android:textColor="#FFFFFF" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/credenciais_recycler"

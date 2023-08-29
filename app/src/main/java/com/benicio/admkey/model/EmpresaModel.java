@@ -4,6 +4,10 @@ public class EmpresaModel {
     String _id, nomeEmpresa, logoEmpresa;
     int qtdCredenciais;
 
+    public EmpresaModel(String _id) {
+        this._id = _id;
+    }
+
     public String getLogoEmpresa() {
         return logoEmpresa;
     }
