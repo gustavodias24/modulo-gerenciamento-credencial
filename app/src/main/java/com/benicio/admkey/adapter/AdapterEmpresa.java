@@ -1,6 +1,10 @@
 package com.benicio.admkey.adapter;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,12 +17,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.benicio.admkey.R;
 import com.benicio.admkey.model.EmpresaModel;
 import com.benicio.admkey.service.Service;
+import com.benicio.admkey.util.MsgModel;
 import com.benicio.admkey.util.RetrofitUtil;
 
 import org.w3c.dom.Text;
 
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class AdapterEmpresa extends RecyclerView.Adapter<AdapterEmpresa.MyViewHolder>{
@@ -46,9 +54,24 @@ public class AdapterEmpresa extends RecyclerView.Adapter<AdapterEmpresa.MyViewHo
         EmpresaModel empresaModel = lista.get(position);
 
         holder.nomeEmpresa.setText(empresaModel.getNomeEmpresa());
-        holder.qtdCredencial.setText(String.format("%i credenciais", empresaModel.getQtdCredenciais()));
+        holder.qtdCredencial.setText(String.format("%d credenciais", empresaModel.getQtdCredenciais()));
+        service.pegarLogoEmpresa(empresaModel.get_id()).enqueue(new Callback<MsgModel>() {
+            @Override
+            public void onResponse(Call<MsgModel> call, Response<MsgModel> response) {
+                if (response.isSuccessful()){
+                    String imageBase64 = response.body().getMsg();
+                    byte[] decodedBytes = Base64.decode(imageBase64, Base64.DEFAULT);
+                    Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+                    holder.empresaImage.setImageBitmap(decodedBitmap);
+                }
+                Log.d("resultado1", "onResponse: " + response.message());
+            }
 
-
+            @Override
+            public void onFailure(Call<MsgModel> call, Throwable t) {
+                Log.d("resultado2", "onResponse: " + t.getMessage());
+            }
+        });
     }
 
     @Override

@@ -19,6 +19,9 @@ import com.benicio.admkey.util.RetrofitUtil;
 import java.util.ArrayList;
 import java.util.List;
 
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,14 +40,23 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
+        dialogCarregando = RetrofitUtil.criarDialogCarregando(this);
+
         retrofit = RetrofitUtil.criarRetrofit();
         service = RetrofitUtil.criarService(retrofit);
-        dialogCarregando = RetrofitUtil.criarDialogCarregando(MainActivity.this);
         configurarRecycler();
 
         binding.empresaAddFab.setOnClickListener( viewAdd -> {
             startActivity(new Intent(getApplicationContext(), AdicionarEmpresaActivity.class));
         });
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        listarEmpresas();
+
     }
 
     public void configurarRecycler(){
@@ -58,6 +70,24 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void listarEmpresas(){}
+    public void listarEmpresas(){
+        lista.clear();
+//        dialogCarregando.show();
+        service.listarEmpresa().enqueue(new Callback<List<EmpresaModel>>() {
+            @Override
+            public void onResponse(Call<List<EmpresaModel>> call, Response<List<EmpresaModel>> response) {
+//                dialogCarregando.dismiss();
+                if ( response.isSuccessful()){
+                    lista.addAll(response.body());
+                    adapter.notifyDataSetChanged();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<EmpresaModel>> call, Throwable t) {
+//                dialogCarregando.dismiss();
+            }
+        });
+    }
 
 }

@@ -16,10 +16,10 @@
         tools:context=".activity.AdicionarEmpresaActivity">
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/logo_empresa"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:src="@tools:sample/avatars" />
+            android:src="@raw/cliqueiaqui" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/nome_empresa_field"
@@ -37,11 +37,14 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/button"
+            android:id="@+id/add_empresa_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:backgroundTint="#673AB7"
             android:drawableLeft="@drawable/baseline_add_24"
-            android:text="Adicionar empresa" />
+            android:text="Adicionar empresa"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold" />
     </LinearLayout>
 </ScrollView>

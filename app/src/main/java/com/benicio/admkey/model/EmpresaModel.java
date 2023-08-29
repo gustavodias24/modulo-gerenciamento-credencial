@@ -1,11 +1,26 @@
 package com.benicio.admkey.model;
 
 public class EmpresaModel {
-    String _id, nomeEmpresa;
+    String _id, nomeEmpresa, logoEmpresa;
     int qtdCredenciais;
+
+    public String getLogoEmpresa() {
+        return logoEmpresa;
+    }
+
+    public void setLogoEmpresa(String logoEmpresa) {
+        this.logoEmpresa = logoEmpresa;
+    }
 
     public String get_id() {
         return _id;
+    }
+
+    public EmpresaModel(String _id, String nomeEmpresa, String logoEmpresa, int qtdCredenciais) {
+        this._id = _id;
+        this.nomeEmpresa = nomeEmpresa;
+        this.logoEmpresa = logoEmpresa;
+        this.qtdCredenciais = qtdCredenciais;
     }
 
     public EmpresaModel() {
