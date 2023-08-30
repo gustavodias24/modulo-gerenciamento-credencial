@@ -25,7 +25,16 @@
             android:drawableLeft="@drawable/baseline_add_24"
             android:gravity="center|center_horizontal"
             android:text="Adicionar mais credenciais"
-            android:textAlignment="viewStart"
+            android:textColor="#FFFFFF" />
+        <Button
+            android:id="@+id/baixar_credencial_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|center_horizontal"
+            android:backgroundTint="#673AB7"
+            android:drawableLeft="@drawable/baseline_copy_all_24"
+            android:gravity="center|center_horizontal"
+            android:text="Copiar todas credenciais"
             android:textColor="#FFFFFF" />
 
         <androidx.recyclerview.widget.RecyclerView

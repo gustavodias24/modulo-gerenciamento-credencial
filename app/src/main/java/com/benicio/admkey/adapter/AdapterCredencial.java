@@ -34,13 +34,17 @@ public class AdapterCredencial extends RecyclerView.Adapter<AdapterCredencial.My
         CredencialModel credencialModel = lista.get(position);
         String infoUser = "";
         if ( credencialModel.getUsuario() != null){
-            infoUser = "\nAtivada por:" + credencialModel.getUsuario().getNome() + " no dia " + credencialModel.getData_ativacao() + "\n" +
+            infoUser = "\nAtivada por: " + credencialModel.getUsuario().getNome() + " no dia " + credencialModel.getData_ativacao() + "\n" +
             "Email: " + credencialModel.getUsuario().getEmail() + "\n" +
             "Telefone: " + credencialModel.getUsuario().getTelefone() + "\n" +
             "Login: " + credencialModel.getUsuario().getLogin();
         }
         holder.status.setText(
-                "Credencial Status:\n" + "Ativa: "+ credencialModel.getAtiva() + "\n" + infoUser
+                        credencialModel.get_id()
+                        +"\n"
+                        + "Ativa: "
+                        + credencialModel.getAtiva()
+                        + "\n" + infoUser
         );
     }
 

@@ -27,4 +27,11 @@ public interface Service {
 
     @POST("{id_empresa}/listar_credencial")
     Call<List<CredencialModel>> listarCredencial (@Path("id_empresa") String id_empresa);
+
+    @POST("{todas}/{id_empresa}/copiar_credenciais")
+    Call<MsgModel> credencialForCopy (@Path("id_empresa") String id_empresa, @Path("todas") String todas);
+
+    @POST("alterar_status")
+    Call<MsgModel> alterarStatus (@Body CredencialModel credencialModel);
+
 }

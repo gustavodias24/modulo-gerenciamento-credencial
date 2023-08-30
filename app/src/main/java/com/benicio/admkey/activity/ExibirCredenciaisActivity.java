@@ -9,8 +9,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Toast;
 
 import com.benicio.admkey.R;
@@ -23,6 +29,7 @@ import com.benicio.admkey.model.CredencialModel;
 import com.benicio.admkey.model.EmpresaModel;
 import com.benicio.admkey.service.Service;
 import com.benicio.admkey.util.MsgModel;
+import com.benicio.admkey.util.RecyclerItemClickListener;
 import com.benicio.admkey.util.RetrofitUtil;
 
 import java.util.ArrayList;
@@ -42,6 +49,7 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
     private Dialog dialogCarregando, dialogCriarCredenciais;
     private ActivityExibirCredenciaisBinding binding;
     private EmpresaModel empresaId;
+    private ClipboardManager clipboardManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +57,8 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
         binding = ActivityExibirCredenciaisBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
+        clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
 
         retrofit = RetrofitUtil.criarRetrofit();
         service = RetrofitUtil.criarService(retrofit);
@@ -65,9 +75,90 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         empresaId = new EmpresaModel(getIntent().getStringExtra("id_empresa"));
+
+        binding.baixarCredencialBtn.setOnClickListener( baixarView -> {
+            AlertDialog.Builder b = new AlertDialog.Builder(ExibirCredenciaisActivity.this);
+            b.setPositiveButton("Copiar apenas as inativadas", (dialogInterface, i) -> copiarParaTransferencia("0"));
+
+            b.setNegativeButton("Copiar tudo", (dialogInterface, i) -> copiarParaTransferencia("1"));
+            b.show();
+        });
+
+        r.addOnItemTouchListener(new RecyclerItemClickListener(
+                getApplicationContext(),
+                r,
+                new RecyclerItemClickListener.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(View view, int position) {
+                        CredencialModel credencialClicada = lista.get(position);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(ExibirCredenciaisActivity.this);
+                        builder.setPositiveButton("Copiar", (dialogInterface, i) -> {
+                            Toast.makeText(ExibirCredenciaisActivity.this, "Credencial copiada", Toast.LENGTH_SHORT).show();
+                            clipboardManager.setPrimaryClip(ClipData.newPlainText("credencial", credencialClicada.get_id()));
+                        });
+
+                        String acao = credencialClicada.getAtiva() ?  "Desativar" : "Ativar";
+                        builder.setNegativeButton(acao, (dialogInterface, i) -> alterarStatus(credencialClicada));
+
+                        builder.create().show();
+                    }
+
+                    @Override
+                    public void onLongItemClick(View view, int position) {
+
+                    }
+
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+                    }
+                }
+        ));
+    }
+
+    public void alterarStatus(CredencialModel credencialModel){
+        dialogCarregando.show();
+        service.alterarStatus(credencialModel).enqueue(new Callback<MsgModel>() {
+            @Override
+            public void onResponse(Call<MsgModel> call, Response<MsgModel> response) {
+                dialogCarregando.dismiss();
+                if(response.isSuccessful()){
+                    Toast.makeText(ExibirCredenciaisActivity.this, response.body().getMsg(), Toast.LENGTH_SHORT).show();
+                    listarCredenciais();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MsgModel> call, Throwable t) {
+                dialogCarregando.dismiss();
+            }
+        });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         listarCredenciais();
     }
 
+    public void copiarParaTransferencia(String todas){
+        dialogCarregando.show();
+        service.credencialForCopy(empresaId.get_id(), todas).enqueue(new Callback<MsgModel>() {
+            @Override
+            public void onResponse(Call<MsgModel> call, Response<MsgModel> response) {
+                dialogCarregando.dismiss();
+                if ( response.isSuccessful()){
+                    Toast.makeText(ExibirCredenciaisActivity.this, "Credenciais copiadas!", Toast.LENGTH_SHORT).show();
+                    clipboardManager.setPrimaryClip( ClipData.newPlainText("credenciais", response.body().getMsg()));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<MsgModel> call, Throwable t) {
+                dialogCarregando.dismiss();
+            }
+        });
+    }
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if ( item.getItemId() == android.R.id.home){
