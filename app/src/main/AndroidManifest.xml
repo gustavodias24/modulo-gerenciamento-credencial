@@ -19,17 +19,23 @@
         <activity
             android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar.Bridge"
             android:screenOrientation="portrait"
-            android:name=".activity.ExibirCredenciaisActivity"
+            android:name=".activity.MenssageiroActivity"
             android:exported="false" />
         <activity
-            android:screenOrientation="portrait"
-            android:name=".activity.AdicionarEmpresaActivity"
+            android:name=".activity.ExibirCredenciaisActivity"
             android:exported="false"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar.Bridge" />
         <activity
+            android:name=".activity.AdicionarEmpresaActivity"
+            android:exported="false"
             android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar.Bridge" />
+        <activity
             android:name=".activity.MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.MaterialComponents.Light.DarkActionBar.Bridge">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

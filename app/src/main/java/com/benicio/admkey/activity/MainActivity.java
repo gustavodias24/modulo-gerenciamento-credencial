@@ -10,10 +10,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 
+import com.benicio.admkey.R;
 import com.benicio.admkey.adapter.AdapterEmpresa;
 import com.benicio.admkey.databinding.ActivityMainBinding;
 import com.benicio.admkey.model.EmpresaModel;
@@ -76,6 +79,22 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
         ));
+
+        getSupportActionBar().setTitle("Home");
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.meu_principal, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if ( item.getItemId() == R.id.ir_pro_menssageiro){
+            startActivity(new Intent(getApplicationContext(), MenssageiroActivity.class));
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
