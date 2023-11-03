@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.benicio.admkey.R;
 import com.benicio.admkey.databinding.ActivityMenssageiroBinding;
@@ -28,6 +29,7 @@ public class MenssageiroActivity extends AppCompatActivity {
         webSettings.setJavaScriptEnabled(true);  // Permitir JavaScript
         webSettings.setDomStorageEnabled(true);  // Permitir armazenamento DOM
         webSettings.setLoadsImagesAutomatically(true);  // Carregar imagens automaticamente
+        webView.setWebViewClient(new MyWebViewClient());
 
         // Carregar uma URL no WebView
         String url = "https://comunicao-clientes-kaizen.vercel.app/";  // Substitua pela URL desejada
@@ -45,5 +47,14 @@ public class MenssageiroActivity extends AppCompatActivity {
             finish();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public class MyWebViewClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            // Impede que os links sejam abertos em um navegador externo
+            view.loadUrl(url);
+            return true;
+        }
     }
 }

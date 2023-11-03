@@ -20,7 +20,7 @@ public class RetrofitUtil {
     }
     public static Retrofit criarRetrofit(){
         return new Retrofit.Builder()
-                .baseUrl("https://api-gerenciamento-credencial.vercel.app/")
+                .baseUrl("https://gerenciador-credenciais.vercel.app/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
     }
