@@ -2,7 +2,7 @@ package com.benicio.admkey.model;
 
 public class CredencialModel {
     String _id, data_ativacao, dispositivo;
-    Boolean ativa;
+    Boolean ativa, bloqueada = false;
     UsuarioModel usuario;
 
     public String get_id() {
@@ -43,5 +43,13 @@ public class CredencialModel {
 
     public void setUsuario(UsuarioModel usuario) {
         this.usuario = usuario;
+    }
+
+    public Boolean getBloqueada() {
+        return bloqueada;
+    }
+
+    public void setBloqueada(Boolean bloqueada) {
+        this.bloqueada = bloqueada;
     }
 }

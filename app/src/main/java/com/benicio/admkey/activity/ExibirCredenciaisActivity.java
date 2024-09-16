@@ -14,6 +14,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,6 +26,7 @@ import com.benicio.admkey.adapter.AdapterEmpresa;
 import com.benicio.admkey.databinding.ActivityExibirCredenciaisBinding;
 import com.benicio.admkey.databinding.ActivityMainBinding;
 import com.benicio.admkey.databinding.CriarCredencialLayoutBinding;
+import com.benicio.admkey.databinding.LayoutAcaoCredencialBinding;
 import com.benicio.admkey.model.CredencialModel;
 import com.benicio.admkey.model.EmpresaModel;
 import com.benicio.admkey.service.Service;
@@ -66,7 +68,7 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
         configurarRecycler();
         criarDialogAdicionarCredenciamento();
 
-        binding.adicionarCredencialBtn.setOnClickListener( viewCriar -> {
+        binding.adicionarCredencialBtn.setOnClickListener(viewCriar -> {
             dialogCriarCredenciais.show();
         });
 
@@ -76,7 +78,7 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
 
         empresaId = new EmpresaModel(getIntent().getStringExtra("id_empresa"));
 
-        binding.baixarCredencialBtn.setOnClickListener( baixarView -> {
+        binding.baixarCredencialBtn.setOnClickListener(baixarView -> {
             AlertDialog.Builder b = new AlertDialog.Builder(ExibirCredenciaisActivity.this);
             b.setPositiveButton("Copiar apenas as inativadas", (dialogInterface, i) -> copiarParaTransferencia("0"));
 
@@ -92,13 +94,27 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
                     public void onItemClick(View view, int position) {
                         CredencialModel credencialClicada = lista.get(position);
                         AlertDialog.Builder builder = new AlertDialog.Builder(ExibirCredenciaisActivity.this);
-                        builder.setPositiveButton("Copiar", (dialogInterface, i) -> {
+
+                        LayoutAcaoCredencialBinding credencialBinding = LayoutAcaoCredencialBinding.inflate(getLayoutInflater());
+                        credencialBinding.copiar.setOnClickListener(v -> {
                             Toast.makeText(ExibirCredenciaisActivity.this, "Credencial copiada", Toast.LENGTH_SHORT).show();
                             clipboardManager.setPrimaryClip(ClipData.newPlainText("credencial", credencialClicada.get_id()));
                         });
 
-                        String acao = credencialClicada.getAtiva() ?  "Desativar" : "Ativar";
-                        builder.setNegativeButton(acao, (dialogInterface, i) -> alterarStatus(credencialClicada));
+                        credencialBinding.swAtivada.setChecked(credencialClicada.getAtiva());
+                        credencialBinding.swBlock.setChecked(credencialClicada.getBloqueada());
+
+                        credencialBinding.swAtivada.setOnClickListener(v -> {
+                            credencialClicada.setAtiva(credencialBinding.swAtivada.isChecked());
+                            alterarStatus(credencialClicada);
+                        });
+
+                        credencialBinding.swBlock.setOnClickListener( v -> {
+                            credencialClicada.setBloqueada(credencialBinding.swBlock.isChecked());
+                            alterarStatus(credencialClicada);
+                        });
+
+                        builder.setView(credencialBinding.getRoot());
 
                         builder.create().show();
                     }
@@ -116,13 +132,13 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
         ));
     }
 
-    public void alterarStatus(CredencialModel credencialModel){
+    public void alterarStatus(CredencialModel credencialModel) {
         dialogCarregando.show();
         service.alterarStatus(credencialModel).enqueue(new Callback<MsgModel>() {
             @Override
             public void onResponse(Call<MsgModel> call, Response<MsgModel> response) {
                 dialogCarregando.dismiss();
-                if(response.isSuccessful()){
+                if (response.isSuccessful()) {
                     Toast.makeText(ExibirCredenciaisActivity.this, response.body().getMsg(), Toast.LENGTH_SHORT).show();
                     listarCredenciais();
                 }
@@ -141,15 +157,15 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
         listarCredenciais();
     }
 
-    public void copiarParaTransferencia(String todas){
+    public void copiarParaTransferencia(String todas) {
         dialogCarregando.show();
         service.credencialForCopy(empresaId.get_id(), todas).enqueue(new Callback<MsgModel>() {
             @Override
             public void onResponse(Call<MsgModel> call, Response<MsgModel> response) {
                 dialogCarregando.dismiss();
-                if ( response.isSuccessful()){
+                if (response.isSuccessful()) {
                     Toast.makeText(ExibirCredenciaisActivity.this, "Credenciais copiadas!", Toast.LENGTH_SHORT).show();
-                    clipboardManager.setPrimaryClip( ClipData.newPlainText("credenciais", response.body().getMsg()));
+                    clipboardManager.setPrimaryClip(ClipData.newPlainText("credenciais", response.body().getMsg()));
                 }
             }
 
@@ -159,15 +175,16 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
             }
         });
     }
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if ( item.getItemId() == android.R.id.home){
+        if (item.getItemId() == android.R.id.home) {
             finish();
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public void configurarRecycler(){
+    public void configurarRecycler() {
 
         r = binding.credenciaisRecycler;
         r.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
@@ -178,11 +195,11 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
 
     }
 
-    public void criarDialogAdicionarCredenciamento(){
+    public void criarDialogAdicionarCredenciamento() {
         AlertDialog.Builder b = new AlertDialog.Builder(ExibirCredenciaisActivity.this);
         CriarCredencialLayoutBinding criarCredencialBinding = CriarCredencialLayoutBinding.inflate(getLayoutInflater());
         criarCredencialBinding.quantidadeCredencialField.getEditText().setText("1");
-        criarCredencialBinding.criarCredencialBtn.setOnClickListener( view -> {
+        criarCredencialBinding.criarCredencialBtn.setOnClickListener(view -> {
             String quantidade = criarCredencialBinding.quantidadeCredencialField.getEditText().getText().toString();
             criarCredencial(quantidade, empresaId);
         });
@@ -190,13 +207,13 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
         dialogCriarCredenciais = b.create();
     }
 
-    public void criarCredencial(String qtd, EmpresaModel empresaModel){
+    public void criarCredencial(String qtd, EmpresaModel empresaModel) {
         dialogCarregando.show();
         service.criarCredencial(qtd, empresaModel).enqueue(new Callback<MsgModel>() {
             @Override
             public void onResponse(Call<MsgModel> call, Response<MsgModel> response) {
                 dialogCarregando.dismiss();
-                if ( response.isSuccessful() ){
+                if (response.isSuccessful()) {
                     Toast.makeText(ExibirCredenciaisActivity.this, response.body().getMsg(), Toast.LENGTH_SHORT).show();
                     listarCredenciais();
                     dialogCriarCredenciais.dismiss();
@@ -210,14 +227,14 @@ public class ExibirCredenciaisActivity extends AppCompatActivity {
         });
     }
 
-    public void listarCredenciais(){
+    public void listarCredenciais() {
         lista.clear();
         dialogCarregando.show();
         service.listarCredencial(empresaId.get_id()).enqueue(new Callback<List<CredencialModel>>() {
             @Override
             public void onResponse(Call<List<CredencialModel>> call, Response<List<CredencialModel>> response) {
                 dialogCarregando.dismiss();
-                if ( response.isSuccessful() ){
+                if (response.isSuccessful()) {
                     lista.addAll(response.body());
                     adapter.notifyDataSetChanged();
                 }
